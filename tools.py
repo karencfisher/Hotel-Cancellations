@@ -13,6 +13,7 @@ from sklearn.base import TransformerMixin, BaseEstimator
 from IPython.display import display
 
 
+
 def fixTarget(df):
     '''
     Preprocessing data before split. Updates the status_reservation in cases where
@@ -117,9 +118,6 @@ class wrangleData(BaseEstimator, TransformerMixin):
 
         return X_copy
     
-    
-    
-    from sklearn.metrics import confusion_matrix
     
      
 
