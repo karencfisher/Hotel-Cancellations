@@ -2,7 +2,7 @@
 """
 Created on Sat Jun  6 20:11:36 2020
 
-@author: A
+Various objects and functions for the hotel cancellations modelling
 """
 
 import pandas as pd
@@ -120,7 +120,19 @@ class wrangleData(BaseEstimator, TransformerMixin):
     
     
     from sklearn.metrics import confusion_matrix
+    
      
+
+class selectFeatures(BaseEstimator, TransformerMixin):
+    def __init__(self, features):
+        self.features = features
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X, y=None):
+        return X[self.features]
+
 
 
 def class_metrics(y_true, y_pred):
@@ -174,7 +186,7 @@ def ROCcurves(y_true, X, model, classes=''):
     '''
     # if classes not specified, try to interrogate model for them
     if len(classes) == 0:
-      classes = model.classes_
+        classes = model.classes_
 
     # Predict probabilities for each class
     y_h = model.predict_proba(X)
