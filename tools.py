@@ -12,7 +12,7 @@ import numpy as np
 from sklearn.base import TransformerMixin, BaseEstimator
 from IPython.display import display
 
-
+### Pre-processing
 
 def fixTarget(df):
     '''
@@ -53,7 +53,7 @@ def fixTarget(df):
     
     return df_copy
 
-
+###### Transformers
 
 class wrangleData(BaseEstimator, TransformerMixin):
     '''
@@ -118,9 +118,6 @@ class wrangleData(BaseEstimator, TransformerMixin):
         self.columns_ = X_copy.columns
 
         return X_copy
-    
-    
-     
 
 class selectFeatures(BaseEstimator, TransformerMixin):
     def __init__(self, features):
@@ -132,7 +129,20 @@ class selectFeatures(BaseEstimator, TransformerMixin):
     def transform(self, X, y=None):
         return X[self.features]
 
+    
+class excludeFeatures(BaseEstimator, TransfromerMixin):
+    def __init__(self, features):
+        self.features = features
+        
+    def fit(self, X, y=None):
+        return self
+    
+    def transform(self, X, y=None):
+        X_copy = X.copy()
+        X_copy = X_copy.drop(columns=features)
+        return X_copy
 
+### Metrics
 
 def class_metrics(y_true, y_pred):
     '''
@@ -171,8 +181,6 @@ def class_metrics(y_true, y_pred):
     return confuse_matrix, class_matrix
 
 
-
-
 def ROCcurves(y_true, X, model, classes=''):
     '''
     Plot ROC curves for each class 
@@ -206,7 +214,7 @@ def ROCcurves(y_true, X, model, classes=''):
     plt.show()
 
 
-
+### Convenient function to test and score model
 
 def tryModel(model, X_train, y_train, X_val, y_val):
     model.fit(X_train, y_train)
