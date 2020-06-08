@@ -130,7 +130,7 @@ class selectFeatures(BaseEstimator, TransformerMixin):
         return X[self.features]
 
     
-class excludeFeatures(BaseEstimator, TransfromerMixin):
+class excludeFeatures(BaseEstimator, TransformerMixin):
     def __init__(self, features):
         self.features = features
         
