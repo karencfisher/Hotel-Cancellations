@@ -83,8 +83,9 @@ class wrangleData(BaseEstimator, TransformerMixin):
         
         # Any observations in which both stays_in_week_nights and stays_in_weekend_nights are
         # 0, change them to NaN (missing data)
-        cond = X_copy['stays_in_week_nights'] + X_copy['stays_in_weekend_nights'] == 0
-        X_copy.loc[cond, ['stays_in_week_nights', 'stays_in_weekend_nights']] = np.NaN
+        X_copy['nights_stay'] = X_copy['stays_in_week_nights'] + X_copy['stays_in_weekend_nights']
+        X_copy = X_copy.drop(columns=['stays_in_week_nights', 'stays_in_weekend_nights'])
+        X_copy['nights_stay'] = X_copy['nights_stay'].replace(0, np.NaN)
 
         # Drop date information (except arrival_date_week_number for seasonality)
         # (Optional)
