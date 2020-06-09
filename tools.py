@@ -139,7 +139,8 @@ class excludeFeatures(BaseEstimator, TransformerMixin):
     
     def transform(self, X, y=None):
         X_copy = X.copy()
-        X_copy = X_copy.drop(columns=self.features)
+        if len(self.features) > 0:
+            X_copy = X_copy.drop(columns=self.features)
         return X_copy
 
 ### Metrics
