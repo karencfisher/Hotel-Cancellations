@@ -86,6 +86,11 @@ class wrangleData(BaseEstimator, TransformerMixin):
         X_copy['nights_stay'] = X_copy['stays_in_week_nights'] + X_copy['stays_in_weekend_nights']
         X_copy = X_copy.drop(columns=['stays_in_week_nights', 'stays_in_weekend_nights'])
         X_copy['nights_stay'] = X_copy['nights_stay'].replace(0, np.NaN)
+        
+        # Add feature whether asssigned_room_type and reserved_room_type differs. (Could be source
+        # for cancellations?)
+        X_copy['room_type_changed'] = X_copy['assigned_room_type'] != X_copy['reserved_room_type']
+        X_copy = X_copy.drop(columns=['assigned_room_type', 'reserved_room_type'])
 
         # Drop date information (except arrival_date_week_number for seasonality)
         # (Optional)
