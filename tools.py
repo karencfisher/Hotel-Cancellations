@@ -103,6 +103,13 @@ class wrangleData(BaseEstimator, TransformerMixin):
             cardinality = X_copy.select_dtypes(exclude='number').nunique()
             hc_feat = cardinality[cardinality > self.max_cardinality].index.tolist()
             X_copy = X_copy.drop(columns=hc_feat)
+            
+        # Drop distribution_channel as overlapping with market_segment
+        X_copy = X_copy.drop('distribution_channel', axis=1)
+        
+        # Drop previous_bookings_not_canceled as overlap with is_repeated_guest and
+        # previous_cancellations
+        X_copy = X_copy.drop('previous_bookings_not_canceled', axis=1)
 
         # If ADR is < 50 or > 300, change to NaN
         cond = (X_copy['adr'] > 300) | (X_copy['adr'] < 50)
