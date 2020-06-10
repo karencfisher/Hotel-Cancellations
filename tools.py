@@ -110,6 +110,9 @@ class wrangleData(BaseEstimator, TransformerMixin):
         # Drop previous_bookings_not_canceled as overlap with is_repeated_guest and
         # previous_cancellations
         X_copy = X_copy.drop('previous_bookings_not_canceled', axis=1)
+        
+        # Drop babies (but not hard) and children
+        X_copy = X_copy.drop(columns=['babies', 'children'])
 
         # If ADR is < 50 or > 300, change to NaN
         cond = (X_copy['adr'] > 300) | (X_copy['adr'] < 50)
