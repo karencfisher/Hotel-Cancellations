@@ -17,6 +17,8 @@ import eli5
 from eli5.sklearn import PermutationImportance
 import category_encoders as ce
 from sklearn.impute import SimpleImputer
+from pdpbox.pdp import pdp_isolate, pdp_plot, pdp_interact, pdp_interact_plot
+import shap
 
 ### Pre-processing
 
@@ -254,17 +256,7 @@ def tryModel(model, X_train, y_train, X_val, y_val):
 
     
 def permutationImports(model, X_train, y_train, X_val, y_val):
-    # Pipeline for transformers alone
-    transformers = make_pipeline(tools.wrangleData(),
-                                ce.OrdinalEncoder(),
-                                SimpleImputer())
-
-    X_train_transformed = transformers.fit_transform(X_train)
-    X_val_transformed = transformers.transform(X_val)
-
-    # fit the  model
-    model.fit(X_train_transformed, y_train)
-
+    
     # We'll look at the importances for both accuracy score and recall
     permuter = PermutationImportance(
         model,
@@ -285,3 +277,50 @@ def permutationImports(model, X_train, y_train, X_val, y_val):
     permute_scores.sort_values().plot.barh()
     plt.show()   
     
+    
+def plotFeature(model, df, feature, cat_features=[], encodings=None):
+    plt.rcParams['figure.dpi'] = 72
+    isolated = pdp_isolate(model=model, 
+                          dataset=df,
+                          model_features=df.columns,
+                          feature=feature)
+
+    pdp_plot(isolated, feature_name=feature)
+    if encodings == None:
+        return
+    elif feature in cat_features:
+        for item in encodings:
+            if item['col'] == feature:
+                feature_mapping = item['mapping']
+                feature_mapping = feature_mapping[feature_mapping.index.dropna()]
+                cat_names = feature_mapping.index.tolist()
+                cat_codes = feature_mapping.values.tolist()
+                plt.xticks(cat_codes, cat_names)
+
+    plt.show()
+    
+def plotFeatures(df, features, cat_features=[], encodings=None):
+    interaction = pdp_interact(model=xg_model2,
+                              dataset=df,
+                              model_features=df.columns,
+                              features=features,)
+  
+    pdp = interaction.pdp.pivot_table(values='preds',
+                                        columns=features[0],
+                                        index=features[1])[::-1]
+    if encodings != None:
+        for item in encodings:
+            if item['col'] in features:
+                feature_mapping = item['mapping']
+                feature_mapping = feature_mapping[feature_mapping.index.dropna()]
+                cat_names = feature_mapping.index.tolist()
+                cat_codes = feature_mapping.values.tolist()
+                if features.index(item['col']) == 0:         
+                    pdp = pdp.rename(columns=dict(zip(cat_codes, cat_names)))
+                else:
+                    pdp = pdp.rename(index=dict(zip(cat_codes, cat_names)))
+
+    plt.figure(figsize=(7,7))            
+    sns.heatmap(pdp, annot=True, fmt='.3f', cmap='viridis')
+    plt.title(f'PDP interact for \"{features[0]}\" and \"{features[1]}\"')
+    plt.show()
