@@ -15,6 +15,7 @@ from sklearn.pipeline import make_pipeline
 import tools
 import eli5
 from eli5.sklearn import PermutationImportance
+import category_encoders as ce
 
 ### Pre-processing
 
