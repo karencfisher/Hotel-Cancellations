@@ -297,8 +297,8 @@ def plotFeature(model, df, feature, cat_features=[], encodings=None):
 
     plt.show()
     
-def plotFeatures(df, features, cat_features=[], encodings=None):
-    interaction = pdp_interact(model=xg_model2,
+def plotFeatures(model, df, features, cat_features=[], encodings=None):
+    interaction = pdp_interact(model=model,
                               dataset=df,
                               model_features=df.columns,
                               features=features,)
