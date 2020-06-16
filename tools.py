@@ -16,6 +16,7 @@ import tools
 import eli5
 from eli5.sklearn import PermutationImportance
 import category_encoders as ce
+from sklearn.impute import SimpleImputer
 
 ### Pre-processing
 
@@ -259,11 +260,10 @@ def permutationImports(model, X_train, y_train, X_val, y_val):
                                 SimpleImputer())
 
     X_train_transformed = transformers.fit_transform(X_train)
-    X_train_resample, y_train_resample = RandomUnderSampler(random_state=42).fit_sample(X_train_transformed, y_train)
     X_val_transformed = transformers.transform(X_val)
 
     # fit the  model
-    model.fit(X_train_resample, y_train_resample)
+    model.fit(X_train_transformed, y_train)
 
     # We'll look at the importances for both accuracy score and recall
     permuter = PermutationImportance(
@@ -283,7 +283,5 @@ def permutationImports(model, X_train, y_train, X_val, y_val):
 
     plt.figure(figsize=(10, len(wrangler.columns_) / 2))
     permute_scores.sort_values().plot.barh()
-    plt.show()
-
-    return permute_scores, permute1_scores    
+    plt.show()   
     
