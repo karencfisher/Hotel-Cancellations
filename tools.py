@@ -247,5 +247,38 @@ def tryModel(model, X_train, y_train, X_val, y_val):
     display(scores[1])
 
     
-    
+def permutationImports(model, X_train, y_train, X_val, y_val):
+    # Pipeline for transformers alone
+    transformers = make_pipeline(tools.wrangleData(max_cardinality=50),
+                                ce.OrdinalEncoder(),
+                                SimpleImputer())
+
+    X_train_transformed = transformers.fit_transform(X_train)
+    X_train_resample, y_train_resample = RandomUnderSampler(random_state=42).fit_sample(X_train_transformed, y_train)
+    X_val_transformed = transformers.transform(X_val)
+
+    # fit the  model
+    model.fit(X_train_resample, y_train_resample)
+
+    # We'll look at the importances for both accuracy score and recall
+    permuter = PermutationImportance(
+        model,
+        scoring='accuracy',
+        random_state=42
+    )
+
+    permuter.fit(X_val_transformed, y_val)
+
+    wrangler = transformers.named_steps['wrangledata']
+
+    print('Accuracy score\n')
+    permute_scores = pd.Series(permuter.feature_importances_, wrangler.columns_)
+    display(permute_scores.sort_values(ascending=False))
+    print('\n')
+
+    plt.figure(figsize=(10, len(wrangler.columns_) / 2))
+    permute_scores.sort_values().plot.barh()
+    plt.show()
+
+    return permute_scores, permute1_scores    
     
