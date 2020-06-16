@@ -267,11 +267,11 @@ def permutationImports(model, X_val, y_val):
     permuter.fit(X_val, y_val)
     
     print('Accuracy score\n')
-    permute_scores = pd.Series(permuter.feature_importances_, X_val.columns_)
+    permute_scores = pd.Series(permuter.feature_importances_, X_val.columns)
     display(permute_scores.sort_values(ascending=False))
     print('\n')
 
-    plt.figure(figsize=(10, len(X_val.columns_) / 2))
+    plt.figure(figsize=(10, len(X_val.columns) / 2))
     permute_scores.sort_values().plot.barh()
     plt.show()   
     
