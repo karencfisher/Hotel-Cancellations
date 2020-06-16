@@ -255,7 +255,7 @@ def tryModel(model, X_train, y_train, X_val, y_val):
     
 def permutationImports(model, X_train, y_train, X_val, y_val):
     # Pipeline for transformers alone
-    transformers = make_pipeline(tools.wrangleData(max_cardinality=50),
+    transformers = make_pipeline(tools.wrangleData(),
                                 ce.OrdinalEncoder(),
                                 SimpleImputer())
 
