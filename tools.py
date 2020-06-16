@@ -12,6 +12,9 @@ import numpy as np
 from sklearn.base import TransformerMixin, BaseEstimator
 from IPython.display import display
 from sklearn.pipeline import make_pipeline
+import tools
+import eli5
+from eli5.sklearn import PermutationImportance
 
 ### Pre-processing
 
