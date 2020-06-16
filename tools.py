@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.base import TransformerMixin, BaseEstimator
 from IPython.display import display
+from sklearn.pipeline import make_pipeline
 
 ### Pre-processing
 
