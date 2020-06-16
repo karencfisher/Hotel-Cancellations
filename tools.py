@@ -8,6 +8,7 @@ Various objects and functions for the hotel cancellations modelling
 import pandas as pd
 from sklearn.metrics import confusion_matrix, accuracy_score, roc_curve
 import matplotlib.pyplot as plt
+import seaborn as sns
 import numpy as np
 from sklearn.base import TransformerMixin, BaseEstimator
 from IPython.display import display
