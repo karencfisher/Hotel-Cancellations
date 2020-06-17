@@ -5,7 +5,7 @@ Created on Sat Jun  6 20:11:36 2020
 Various objects and functions for the hotel cancellations modelling
 """
 
-# Basic imports needed
+# Basic imports needed -- should all be installed by default
 import pandas as pd
 from sklearn.metrics import confusion_matrix, roc_curve
 import matplotlib.pyplot as plt
@@ -154,13 +154,13 @@ class wrangleData(BaseEstimator, TransformerMixin):
 
 class selectFeatures(BaseEstimator, TransformerMixin):
     def __init__(self, features):
-        self.features = features
+        self.features_ = features
 
     def fit(self, X, y=None):
         return self
 
     def transform(self, X, y=None):
-        return X[self.features]
+        return X[self.features_]
     
 
     
@@ -175,6 +175,7 @@ class excludeFeatures(BaseEstimator, TransformerMixin):
         X_copy = X.copy()
         if len(self.features) > 0:
             X_copy = X_copy.drop(columns=self.features)
+        self.features_ = X_copy.columns.tolist()
         return X_copy
     
 
