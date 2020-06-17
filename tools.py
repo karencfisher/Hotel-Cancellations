@@ -5,21 +5,27 @@ Created on Sat Jun  6 20:11:36 2020
 Various objects and functions for the hotel cancellations modelling
 """
 
+# Basic imports needed
 import pandas as pd
-from sklearn.metrics import confusion_matrix, accuracy_score, roc_curve
+from sklearn.metrics import confusion_matrix, roc_curve
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 from sklearn.base import TransformerMixin, BaseEstimator
 from IPython.display import display
-from sklearn.pipeline import make_pipeline
-import tools
-import eli5
-from eli5.sklearn import PermutationImportance
-import category_encoders as ce
-from sklearn.impute import SimpleImputer
-from pdpbox.pdp import pdp_isolate, pdp_plot, pdp_interact, pdp_interact_plot
-import shap
+
+# Optional -- might not be installed. Invoking functions depending on them will
+# error out if these are not available.
+try:
+    
+    from eli5.sklearn import PermutationImportance
+    
+    from pdpbox.pdp import pdp_isolate, pdp_plot, pdp_interact
+    
+except ModuleNotFoundError:
+    pass   
+
+
 
 ### Pre-processing
 
@@ -61,6 +67,7 @@ def fixTarget(df):
     df_copy.loc[cond, 'reservation_status'] = 'No-Show' 
     
     return df_copy
+
 
 ###### Transformers
 
@@ -142,6 +149,8 @@ class wrangleData(BaseEstimator, TransformerMixin):
         self.columns_ = X_copy.columns
 
         return X_copy
+    
+    
 
 class selectFeatures(BaseEstimator, TransformerMixin):
     def __init__(self, features):
@@ -152,6 +161,7 @@ class selectFeatures(BaseEstimator, TransformerMixin):
 
     def transform(self, X, y=None):
         return X[self.features]
+    
 
     
 class excludeFeatures(BaseEstimator, TransformerMixin):
@@ -166,6 +176,7 @@ class excludeFeatures(BaseEstimator, TransformerMixin):
         if len(self.features) > 0:
             X_copy = X_copy.drop(columns=self.features)
         return X_copy
+    
 
 ### Metrics
 
@@ -242,6 +253,11 @@ def ROCcurves(y_true, X, model, classes=''):
 ### Convenient function to test and score model
 
 def tryModel(model, X_train, y_train, X_val, y_val):
+    '''
+    Fit and score a model. Calculate and display confusion matrix and recall/
+    precision scores for each class.
+    '''
+    
     model.fit(X_train, y_train)
     train_score = model.score(X_train, y_train)
     val_score = model.score(X_val, y_val)
@@ -257,6 +273,9 @@ def tryModel(model, X_train, y_train, X_val, y_val):
 
     
 def permutationImports(model, X_val, y_val):
+    '''
+    Get and display permutation importances
+    '''
     
     # We'll look at the importances for both accuracy score and recall
     permuter = PermutationImportance(
@@ -267,17 +286,22 @@ def permutationImports(model, X_val, y_val):
 
     permuter.fit(X_val, y_val)
     
-    print('Accuracy score\n')
+    print('Permutation Importances\n')
     permute_scores = pd.Series(permuter.feature_importances_, X_val.columns)
     display(permute_scores.sort_values(ascending=False))
     print('\n')
 
     plt.figure(figsize=(10, len(X_val.columns) / 2))
     permute_scores.sort_values().plot.barh()
-    plt.show()   
+    plt.show()  
+    
     
     
 def plotFeature(model, df, feature, cat_features=[], encodings=None):
+    '''
+    Single feature pdp plot
+    '''
+    
     plt.rcParams['figure.dpi'] = 72
     isolated = pdp_isolate(model=model, 
                           dataset=df,
@@ -297,8 +321,14 @@ def plotFeature(model, df, feature, cat_features=[], encodings=None):
                 plt.xticks(cat_codes, cat_names)
 
     plt.show()
+
+
     
 def plotFeatures(model, df, features, cat_features=[], encodings=None):
+    '''
+    Interacting features pdp plot
+    '''
+    
     interaction = pdp_interact(model=model,
                               dataset=df,
                               model_features=df.columns,
