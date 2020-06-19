@@ -316,9 +316,9 @@ def plotFeature(model, df, feature, cat_features=[], encodings=None):
         for item in encodings:
             if item['col'] == feature:
                 feature_mapping = item['mapping']
-                feature_mapping = feature_mapping[feature_mapping.index.dropna()]
-                cat_names = feature_mapping.index.tolist()
-                cat_codes = feature_mapping.values.tolist()
+                #feature_mapping = feature_mapping[feature_mapping.index.dropna()]
+                cat_names = list(feature_mapping.keys())
+                cat_codes = list(feature_mapping.values())
                 plt.xticks(cat_codes, cat_names)
 
     plt.show()
@@ -342,9 +342,9 @@ def plotFeatures(model, df, features, cat_features=[], encodings=None):
         for item in encodings:
             if item['col'] in features:
                 feature_mapping = item['mapping']
-                feature_mapping = feature_mapping[feature_mapping.index.dropna()]
-                cat_names = feature_mapping.index.tolist()
-                cat_codes = feature_mapping.values.tolist()
+                #feature_mapping = feature_mapping[feature_mapping.index.dropna()]
+                cat_names = list(feature_mapping.keys())
+                cat_codes = list(feature_mapping.values())
                 if features.index(item['col']) == 0:         
                     pdp = pdp.rename(columns=dict(zip(cat_codes, cat_names)))
                 else:
